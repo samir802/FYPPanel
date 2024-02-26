@@ -7,7 +7,7 @@ if (!isset($_SESSION['id'])) {
 
 // Include database connection
 include('../database/db.php');
-include('../global.php');
+include('../baseLink.php');
 
 // Check if doctor ID is provided in the URL
 if (!isset($_GET['id'])) {

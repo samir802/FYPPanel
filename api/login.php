@@ -1,6 +1,6 @@
 <?php
 require_once('../database/db.php');
-require_once('../global.php');
+require_once('../baseLink.php');
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];

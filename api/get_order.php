@@ -2,7 +2,7 @@
 
 // Include database connection
 include('../database/db.php');
-include('../global.php');
+include('../baseLink.php');
 
 
 
@@ -17,7 +17,7 @@ $user_id = verifyToken($token);
 if ($user_id) {
     // Token is valid, get order based on user ID and type
 
-    
+
     // $order = getorder($user_id);
 
     if ($order) {

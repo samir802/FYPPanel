@@ -6,7 +6,7 @@ if (!isset($_SESSION['id'])) {
 }
 
 require_once('../database/db.php');
-require_once '../global.php';
+require_once '../baseLink.php';
 
 // Initialize variables
 $filterName = '';

@@ -1,5 +1,5 @@
 <?php
-require_once 'global.php';
+require_once 'baseLink.php';
 ?>
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->

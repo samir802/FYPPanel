@@ -1,6 +1,6 @@
 <?php
 include('../database/db.php');
-include('../global.php');
+include('../baseLink.php');
 
 $query = "SELECT * from vehicles";
 $result = $conn->query($query);
