@@ -12,6 +12,7 @@ if ($result->num_rows > 0) {
             'VehicleBrand' => $row['VehicleBrand'],
             'Capacity' => $row['Capacity'],
             'FuelType' => $row['FuelType'],
+            'Price' => $row['Price'],
         );
         $vehicles[] = $vehicle;
     }
