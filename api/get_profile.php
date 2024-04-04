@@ -1,5 +1,5 @@
 <?php
-require_once('../database/db.php');
+require_once ('../database/db.php');
 
 // Check if the token is provided
 if (!isset($_GET['token'])) {
@@ -10,28 +10,21 @@ if (!isset($_GET['token'])) {
 $token = $_GET['token'];
 
 // Retrieve the user profile based on the provided token
-$stmt = $conn->prepare("SELECT users.id, users.name, users.email FROM users INNER JOIN api_tokens ON users.id = api_tokens.user_id WHERE api_tokens.token = ?");
-$stmt->bind_param("s", $token);
-$stmt->execute();
-
-// Get the result
-$result = $stmt->get_result();
+$sql = "SELECT u.* FROM users u INNER JOIN api_tokens a ON u.id = a.user_id WHERE a.token = '$token'";
+$result = $conn->query($sql);
 
 // Check if a row is returned
-if ($result->num_rows === 1) {
-    $row = $result->fetch_assoc();
-
-    // User profile found
-    $userProfile = [
-        "id" => $row['id'],
-        "name" => $row['name'],
-        "email" => $row['email']
-    ];
-
-    // Return the user profile as JSON response
-    header("HTTP/1.1 200 OK");
-    header("Content-Type: application/json");
-    echo json_encode($userProfile);
+if ($result && $result->num_rows > 0) {
+    $userProfiles = [];
+    while ($row = $result->fetch_assoc()) {
+        $userProfiles[] = $row;
+    }
+    header('Content-Type: application/json');
+    echo json_encode([
+        'status' => 'success',
+        'data' => $userProfiles
+    ]);
+    exit();
 } else {
     // Invalid token or user not found
     header("HTTP/1.1 401 Unauthorized");

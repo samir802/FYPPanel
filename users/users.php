@@ -7,6 +7,7 @@ if (!isset($_SESSION['id'])) {
 
 require_once('../database/db.php');
 
+
 // Retrieve the filter values
 $name = $_GET['name'] ?? '';
 $email = $_GET['email'] ?? '';
@@ -51,6 +52,73 @@ $result = $conn->query($sql);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.1.0/css/adminlte.min.css">
     <!-- Add the Font Awesome CDN link below -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <style>
+        /* Custom Styles */
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .wrapper {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-wrapper {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            margin: 20px;
+        }
+
+        .card-header {
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0069d9;
+            border-color: #0062cc;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+
+        .pagination {
+            justify-content: center;
+        }
+    </style>
 </head>
 
 <body class="hold-transition sidebar-mini">
@@ -113,8 +181,8 @@ $result = $conn->query($sql);
                                         </div>
                                     </form>
 
-                                    <table class="table">
-                                        <thead>
+                                    <table class="table table-bordered">
+                                        <thead class="table-dark">
                                             <tr>
                                                 <th>ID</th>
                                                 <th>Name</th>

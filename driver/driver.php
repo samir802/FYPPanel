@@ -10,13 +10,11 @@ require_once '../baseLink.php';
 
 // Initialize variables
 $filterName = '';
-$filterEmail = '';
 
 // Check if the filter form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Retrieve filter values
     $filterName = $_POST['filter_name'];
-    $filterEmail = $_POST['filter_email'];
 }
 
 // Define pagination variables
@@ -25,22 +23,11 @@ $page = isset($_GET['page']) ? $_GET['page'] : 1;
 $offset = ($page - 1) * $recordsPerPage;
 
 // Build the SQL query with filters
-$sql = "SELECT company.*,users.name, users.email, users.phone, users.Image FROM company INNER JOIN users ON company.user_id = users.id";
+$sql = "SELECT * FROM driver WHERE Company_Id = {$_SESSION['id']}";
 
 // Add filters to the query if they are provided
-if (!empty($filterName) || !empty($filterEmail)) {
-    $sql .= " WHERE ";
-    $conditions = [];
-
-    if (!empty($filterName)) {
-        $conditions[] = "users.name LIKE '%$filterName%'";
-    }
-
-    if (!empty($filterEmail)) {
-        $conditions[] = "users.email LIKE '%$filterEmail%'";
-    }
-
-    $sql .= implode(" AND ", $conditions);
+if (!empty($filterName)) {
+    $sql .= " AND Driver_Name LIKE '%$filterName%'";
 }
 
 // Count total records
@@ -59,7 +46,7 @@ $result = $conn->query($sql);
 <html>
 
 <head>
-    <title>company List</title>
+    <title>Driver List</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.1.0/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
@@ -84,7 +71,7 @@ $result = $conn->query($sql);
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h3 class="card-title">Company List</h3><br>
+                                    <h3 class="card-title">Driver List</h3><br>
                                     <a href="add.php" class="btn btn-success">Add New</a>
                                 </div>
                                 <div class="card-body">
@@ -100,13 +87,6 @@ $result = $conn->query($sql);
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="form-group">
-                                                    <label for="filter_email">Email</label>
-                                                    <input type="text" class="form-control" id="filter_email"
-                                                        name="filter_email" value="<?php echo $filterEmail; ?>">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-group">
                                                     <label>&nbsp;</label>
                                                     <button type="submit" class="btn btn-primary">Filter</button>
                                                 </div>
@@ -114,17 +94,14 @@ $result = $conn->query($sql);
                                         </div>
                                     </form>
 
-                                    <!-- company table -->
                                     <table class="table table-bordered table-responsive">
                                         <thead>
                                             <tr>
-                                                <th>ID</th>
-                                                <th>Logo</th>
-                                                <th>Company Name</th>
-                                                <th>Owner Image</th>
-                                                <th>Owner Name</th>
-                                                <th> Phone Number </th>
-                                                <th>Email</th>
+                                                <th>Driver Name</th>
+                                                <th>Phone</th>
+                                                <th>Address</th>
+                                                <th>Price(per day)</th>
+                                                <th>Vehicle Type</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -132,33 +109,24 @@ $result = $conn->query($sql);
                                             <?php while ($row = $result->fetch_assoc()) { ?>
                                                 <tr>
                                                     <td>
-                                                        <?php echo $row['id']; ?>
-                                                    </td>
-                                                    <td><img src="<?php echo $img_base . $row['Company_Logo']; ?>" alt="Img"
-                                                            width="100" height="100">
-                                                    </td>
-
-                                                    <td>
-                                                        <?php echo $row['Company_Name']; ?>
-                                                    </td>
-
-                                                    <td><img src="<?php echo $img_base . $row['Image']; ?>" alt="Img"
-                                                            width="100" height="100">
-                                                    </td>
-
-                                                    <td>
-                                                        <?php echo $row['name']; ?>
+                                                        <?php echo $row['Driver_Name']; ?>
                                                     </td>
                                                     <td>
-                                                        <?php echo $row['phone']; ?>
+                                                        <?php echo $row['Phone']; ?>
                                                     </td>
                                                     <td>
-                                                        <?php echo $row['email']; ?>
+                                                        <?php echo $row['Address']; ?>
                                                     </td>
                                                     <td>
-                                                        <a href="edit.php?id=<?php echo $row['id']; ?>"
+                                                        <?php echo $row['Price']; ?>
+                                                    </td>
+                                                    <td>
+                                                        <?php echo $row['Vehicle_type']; ?>
+                                                    </td>
+                                                    <td>
+                                                        <a href="edit.php?id=<?php echo $row['Driver_ID']; ?>"
                                                             class="btn btn-sm btn-primary">Edit</a>
-                                                        <a href="delete.php?id=<?php echo $row['id']; ?>"
+                                                        <a href="delete.php?id=<?php echo $row['Driver_ID']; ?>"
                                                             class="btn btn-sm btn-danger">Delete</a>
                                                     </td>
                                                 </tr>

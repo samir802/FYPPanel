@@ -5,7 +5,7 @@ if (!isset($_SESSION['id'])) {
     exit();
 }
 
-require_once('../database/db.php');
+require_once ('../database/db.php');
 
 // Pagination variables
 $page = $_GET['page'] ?? 1;
@@ -16,13 +16,32 @@ $offset = ($page - 1) * $perPage;
 $orderId = $_GET['order_id'] ?? '';
 $rented_Date = $_GET['Rented_date'] ?? '';
 
-// Prepare the SQL query with filters
-$sql = "SELECT orders.id, orders.Rented_date, orders.status, orders.user_id, users.name AS user_name
-        FROM orders
-        LEFT JOIN users ON orders.user_id = users.id
-        WHERE orders.id LIKE '%$orderId%' AND orders.Rented_date LIKE '%$rented_Date%'
-        ORDER BY orders.id DESC
-        LIMIT $perPage OFFSET $offset";
+
+$sql = "SELECT 
+    orders.OrderId, 
+    orders.Rented_date, 
+    orders.Return_Date, 
+    orders.status, 
+    users.name AS user_name
+FROM 
+    orders
+LEFT JOIN 
+    users ON orders.user_id = users.id
+LEFT JOIN 
+    vehicles ON orders.vehicle_id = vehicles.VehicleID
+LEFT JOIN 
+    company ON vehicles.Company_Id = company.id
+WHERE 
+    company.id = {$_SESSION['id']}";
+if (!empty($orderId)) {
+    $sql .= " AND orders.OrderId LIKE '%$orderId%'";
+}
+
+if (!empty($rented_Date)) {
+    $sql .= " AND orders.Rented_date LIKE '%$rented_Date%'";
+}
+
+$sql .= " ORDER BY orders.OrderId DESC LIMIT $perPage OFFSET $offset";
 $result = $conn->query($sql);
 
 $doctorName = "";
@@ -31,7 +50,7 @@ $doctorName = "";
 $countSql = "SELECT COUNT(*) AS total
              FROM orders
              LEFT JOIN users ON orders.user_id = users.id
-             WHERE orders.id LIKE '%$orderId%' AND orders.Rented_date LIKE '%$rented_Date%'";
+             WHERE orders.OrderId LIKE '%$orderId%' OR orders.Rented_date LIKE '%$rented_Date%'";
 $countResult = $conn->query($countSql);
 $countRow = $countResult->fetch_assoc();
 $totalorders = $countRow['total'];
@@ -69,16 +88,34 @@ function getUserName($userId)
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.1.0/css/adminlte.min.css">
     <!-- Add the Font Awesome CDN link below -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <style>
+        .pagination {
+            justify-content: center;
+        }
+
+        .pagination .page-link {
+            color: #007bff;
+            border: 1px solid #dee2e6;
+            margin: 0 4px;
+        }
+
+        .pagination .page-item.active .page-link {
+            z-index: 1;
+            color: #fff;
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+    </style>
 </head>
 
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
 
         <!-- Sidebar -->
-        <?php include('../sidebar.php'); ?>
+        <?php include ('../sidebar.php'); ?>
 
         <!-- Header -->
-        <?php include('../header.php'); ?>
+        <?php include ('../header.php'); ?>
 
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
@@ -90,7 +127,7 @@ function getUserName($userId)
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h3 class="card-title">orders</h3>
+                                    <h3 class="card-title">Orders</h3>
                                 </div>
                                 <div class="card-body">
                                     <form class="mb-3" method="GET">
@@ -104,7 +141,7 @@ function getUserName($userId)
                                             </div>
                                             <div class="col-md-3">
                                                 <div class="form-group">
-                                                    <label for="Rented_date">Rented_date</label>
+                                                    <label for="Rented_date">Rented Date</label>
                                                     <input type="date" class="form-control" id="Rented_date"
                                                         name="Rented_date" value="<?php echo $rented_Date; ?>">
                                                 </div>
@@ -119,11 +156,11 @@ function getUserName($userId)
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
-                                                <th>ID</th>
-                                                <th>Rented Date</th>
-                                                <th>Status</th>
-                                                <th>User ID</th>
+
                                                 <th>User Name</th>
+                                                <th>Rented Date</th>
+                                                <th>Returning Date</th>
+                                                <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -132,28 +169,49 @@ function getUserName($userId)
                                             while ($row = $result->fetch_assoc()) {
                                                 ?>
                                                 <tr>
-                                                    <td>
-                                                        <?php echo $row['id']; ?>
-                                                    </td>
-                                                    <td>
-                                                        <?php echo $row['date']; ?>
-                                                    </td>
-                                                    <td>
-                                                        <?php echo $row['status']; ?>
-                                                    </td>
 
-                                                    <td>
-                                                        <?php echo $row['user_id']; ?>
-                                                    </td>
                                                     <td>
                                                         <?php echo $row['user_name']; ?>
                                                     </td>
                                                     <td>
-                                                        <a href="cancel.php?id=<?php echo $row['id']; ?>"
-                                                            class="btn btn-sm btn-primary">Cancel</a>
-                                                        <a href="delete.php?id=<?php echo $row['id']; ?>"
-                                                            class="btn btn-sm btn-danger">Delete</a>
+                                                        <?php echo $row['Rented_date']; ?>
                                                     </td>
+                                                    <td>
+                                                        <?php echo $row['Return_Date']; ?>
+                                                    </td>
+                                                    <td>
+                                                        <?php
+                                                        $status = $row['status'];
+                                                        if ($status == "Pending") {
+                                                            echo '<div class="progress">
+                                                                        <div class="progress-bar bg-info" role="progressbar" style="width: 100%;border-radius: 5px;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">Pending</div>
+                                                                   </div>';
+                                                        } elseif ($status == "Completed") {
+                                                            echo '<div class="progress">
+                                                                        <div class="progress-bar bg-success" role="progressbar" style="width: 100%;border-radius: 5px;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">Completed</div>
+                                                                    </div>';
+                                                        } else {
+                                                            echo '<div class="progress">
+                                                                        <div class="progress-bar bg-danger" role="progressbar" style="width: 100%;border-radius: 5px;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">Cancelled</div>
+                                                                    </div>';
+                                                        }
+                                                        ?>
+                                                    </td>
+
+                                                    <td>
+                                                        <?php
+                                                        $status = $row['status'];
+                                                        if ($status == "Pending") {
+                                                            echo '<a href="cancel.php?id=' . $row['OrderId'] . '" class="btn btn-danger me-2">Cancel</a>';
+                                                        }
+                                                        $status = $row['status'];
+                                                        if ($status == "Pending") {
+                                                            echo '<a href="complete.php?status=' . 'Completed' . '&id=' . $row['OrderId'] . '" class="btn btn-success">Complete</a>';
+                                                        }
+                                                        ?>
+                                                    </td>
+
+
                                                 </tr>
                                                 <?php
                                             }
@@ -201,7 +259,6 @@ function getUserName($userId)
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.1.0/js/adminlte.min.js"></script>
 </body>
 
 </html>

@@ -1,7 +1,7 @@
 <?php
 // Include database connection
-include('../database/db.php');
-include('../baseLink.php');
+include ('../database/db.php');
+include ('../baseLink.php');
 
 // Prepare and execute the query to retrieve Company' data
 $query = "SELECT company.* users.name, users.email, users.Image

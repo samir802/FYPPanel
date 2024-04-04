@@ -1,7 +1,7 @@
 <?php
 // Include database connection
-include('../database/db.php');
-include('../baseLink.php');
+include ('../database/db.php');
+include ('../baseLink.php');
 
 // Verify the token and retrieve the user_id
 function verifyToken($token)

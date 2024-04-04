@@ -3,7 +3,7 @@ include ('../database/db.php');
 include ('../baseLink.php');
 
 $query = "SELECT 
-    v.VehicleID,
+     v.VehicleID,
     v.Vehicle_Info,
     v.VehicleBrand,
     v.Capacity,
@@ -17,37 +17,25 @@ $query = "SELECT
     c.id as Company_Id,
     c.Company_Name,
     c.Company_Logo,
-    u.name,
-    u.phone,
-    u.address,
-    u.email,
-    u.Image,
-    ROUND(COALESCE(AVG(r.Rating), 5), 1) AS Rating
+    u.*,
+    ROUND(AVG(r.Rating), 1) AS AvgRating
 FROM 
     vehicles v
-LEFT JOIN
-	company c On v.Company_Id = c.id
-Left JOIN
-	 users u ON c.user_id = u.id
-LEFT JOIN 
+INNER JOIN 
     orders o ON v.VehicleID = o.vehicle_id
-LEFT JOIN 
+INNER JOIN 
     rating r ON o.OrderId = r.Order_ID
+INNER JOIN 
+    company c ON v.Company_Id = c.id
+INNER JOIN 
+    users u ON c.user_id = u.id
 GROUP BY 
-    v.VehicleID,
-    v.Vehicle_Info,
-    v.VehicleBrand,
-    v.Capacity,
-    v.Engine_capacity,
-    v.Fuel_consumption,
-    v.Driving_method,
-    v.FuelType,
-    v.Vehicle_Type,
-    v.Price,
-    v.Vehicle_Image;
+    v.VehicleID
+HAVING 
+    AVG(r.Rating) >= 3;
+
+
 ";
-
-
 $result = $conn->query($query);
 if ($result->num_rows > 0) {
     $vehicles = array();
@@ -61,9 +49,9 @@ if ($result->num_rows > 0) {
             'Fuel_consumption' => $row['Fuel_consumption'],
             'Driving_method' => $row['Driving_method'],
             'FuelType' => $row['FuelType'],
-            'Vehicle_Type' => $row['Vehicle_Type'],
             'Price' => $row['Price'],
             'Vehicle_Image' => $row['Vehicle_Image'],
+            'Vehicle_Type' => $row['Vehicle_Type'],
             'Company_Id' => $row['Company_Id'],
             'Company_Name' => $row['Company_Name'],
             'Company_Logo' => $row['Company_Logo'],
@@ -72,7 +60,8 @@ if ($result->num_rows > 0) {
             'address' => $row['address'],
             'email' => $row['email'],
             'Image' => $row['Image'],
-            'Rating' => $row['Rating'],
+            'Rating' => $row['AvgRating'],
+
         );
         $vehicles[] = $vehicle;
     }

@@ -1,6 +1,9 @@
 <?php
-require_once('../database/db.php');
-require_once('../baseLink.php');
+// header("Access-Control-Allow-Origin: *");
+// header("Access-Control-Allow-Methods: GET, POST");
+// header("Access-Control-Allow-Headers: Content-Type");
+require_once ('../database/db.php');
+require_once ('../baseLink.php');
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
@@ -38,10 +41,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 $row2 = $result2->fetch_assoc();
 
-
-                $row2['Image'] = $img_base . $row2['Image'];
-
-                $row['customerDetails'] = $row2;
             }
 
             $response = array(

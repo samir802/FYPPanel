@@ -5,7 +5,7 @@ if (!isset($_SESSION['id'])) {
     exit();
 }
 
-require_once('../database/db.php');
+require_once ('../database/db.php');
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -62,10 +62,10 @@ function generateToken()
     <div class="wrapper">
 
         <!-- Sidebar -->
-        <?php include('../sidebar.php'); ?>
+        <?php include ('../sidebar.php'); ?>
 
         <!-- Header -->
-        <?php include('../header.php'); ?>
+        <?php include ('../header.php'); ?>
 
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">

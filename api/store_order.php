@@ -1,8 +1,8 @@
 <?php
 
 // Include database connection
-include('../database/db.php');
-include('../baseLink.php');
+include ('../database/db.php');
+include ('../baseLink.php');
 
 
 // Verify the token and retrieve the user_id
@@ -34,8 +34,10 @@ function verifyToken($token)
 
 
 // Get the order details from the request
-$rentedDate = $_POST['rentedDate'];
+$startDate = $_POST['startDate'];
+$returnDate = $_POST['returnDate'];
 $status = $_POST['status'];
+$totalPrice = $_POST['totalPrice'];
 $token = $_POST['token'];
 $vehicleId = $_POST['vehicleId'];
 
@@ -43,8 +45,8 @@ $vehicleId = $_POST['vehicleId'];
 $user_id = verifyToken($token);
 
 // Store the order in the database
-$sql = "INSERT INTO orders (Rented_date, status, user_id,vehicle_id) 
-        VALUES ('$rentedDate', '$status', $user_id, $vehicleId)";
+$sql = "INSERT INTO orders (Rented_date,Return_Date,status,Total_Price, user_id,vehicle_id) 
+        VALUES ('$startDate','$returnDate','$status','$totalPrice', $user_id, $vehicleId)";
 
 // Execute the SQL query
 if ($conn->query($sql) === TRUE) {

@@ -1,36 +1,28 @@
 <?php
 
 // Include database connection
-include('../database/db.php');
-include('../baseLink.php');
-
-
+include ('../database/db.php');
+include ('../baseLink.php');
 
 // Get the token from the request headers or query parameters
 $token = $_GET['token'] ?? '';
 
-
 // Verify the token and retrieve the user ID
 $user_id = verifyToken($token);
 
-
 if ($user_id) {
-    // Token is valid, get order based on user ID and type
+    // Token is valid, get orders along with user and vehicle details based on user ID
+    $orders = getOrdersWithDetails($user_id);
 
-
-    // $order = getorder($user_id);
-
-    if ($order) {
-        // order found
-        // You can encode the order as JSON and send the response
-        $response = json_encode([
-            'data' => $order
-        ]);
+    if ($orders) {
+        // Orders found
+        // You can encode the orders as JSON and send the response
+        $response = json_encode(['data' => $orders]);
         header('Content-Type: application/json');
         echo $response;
     } else {
-        // No order found
-        $response = json_encode(['message' => 'No order found']);
+        // No orders found
+        $response = json_encode(['message' => 'No orders found']);
         header('Content-Type: application/json');
         echo $response;
     }
@@ -40,7 +32,6 @@ if ($user_id) {
     header('Content-Type: application/json');
     echo $response;
 }
-
 
 // Verify the token and retrieve the user_id
 function verifyToken($token)
@@ -59,92 +50,43 @@ function verifyToken($token)
         $row = $result->fetch_assoc();
         $user_id = $row['user_id'];
 
-        // Close the database connection
-        // $conn->close();
-
         return $user_id;
     } else {
         // Token is invalid or not found
-        // Close the database connection
-        $conn->close();
-
         return null;
     }
 }
 
-// Function to get order based on user ID and user type
-// function getorder($user_id)
-// {
-//     global $conn;
+// Function to get orders along with user and vehicle details based on user ID
+function getOrdersWithDetails($user_id)
+{
+    global $conn;
 
-//     // Sanitize the user ID to prevent SQL injection
-//     $user_id = $conn->real_escape_string($user_id);
+    // Sanitize the user ID to prevent SQL injection
+    $user_id = $conn->real_escape_string($user_id);
 
-//     // Check the user's type (assuming you have a 'type' column in the users table)
-//     $sql = "SELECT type FROM users WHERE id = '$user_id'";
-//     $result = $conn->query($sql);
+    // Query to get orders along with user and vehicle details
+    $sql = "SELECT o.*, u.*, v.* 
+            FROM orders o 
+            JOIN users u ON o.user_id = u.id 
+            JOIN vehicles v ON o.vehicle_id = v.VehicleID 
+            WHERE o.user_id = '$user_id'
+            ORDER BY o.Rented_date DESC
+            ";
 
-//     if ($result && $result->num_rows > 0) {
-//         $row = $result->fetch_assoc();
-//         $user_type = $row['type'];
+    $result = $conn->query($sql);
 
-//         // Retrieve order based on user type
-//         if ($user_type === 'Customer') {
-//             // For vehicle, find the vehicle row based on user ID
-//             $sql = "SELECT id FROM doctors WHERE user_id = '$user_id'";
-//             $result = $conn->query($sql);
-//             if ($result && $result->num_rows > 0) {
-//                 $row = $result->fetch_assoc();
-//                 $doctor_id = $row['id'];
-//                 // Get order for the specific doctor
-//                 // $sql = "SELECT *
-//                 // FROM doctors d
-//                 // JOIN users u ON d.user_id = u.id
-//                 // JOIN order a ON d.id = a.doctor_id
-//                 // WHERE d.id = '$doctor_id'
-
-//                 $sql = "SELECT * FROM order where doctor_id = '$doctor_id'";
-//                 $result = $conn->query($sql);
-
-//                 if ($result && $result->num_rows > 0) {
-//                     $order = [];
-//                     while ($row = $result->fetch_assoc()) {
-//                         $user_id = $row['user_id'];
-//                         $s = "SELECT * from users WHERE id = '$user_id'";
-//                         $r = $conn->query($s);
-//                         while ($userD = $r->fetch_assoc()) {
-//                             $row['customer'] = $userD;
-//                         }
-//                         $order[] = $row;
-//                     }
-
-//                     return $order;
-//                 }
-//             }
-//         } else {
-//             // For customers or other user types, get order based on user ID
-//             $sql = "SELECT *
-//             FROM doctors d
-//             JOIN users u ON d.user_id = u.id
-//             JOIN order a ON d.id = a.doctor_id
-//             WHERE a.user_id = '$user_id'
-//             ";
-//             $result = $conn->query($sql);
-
-//             if ($result && $result->num_rows > 0) {
-//                 $order = [];
-//                 while ($row = $result->fetch_assoc()) {
-//                     $order[] = $row;
-//                 }
-
-//                 return $order;
-//             }
-//         }
-//     }
-
-//     // No order found or user not found
-//     return null;
-// }
+    if ($result && $result->num_rows > 0) {
+        $orders = [];
+        while ($row = $result->fetch_assoc()) {
+            $orders[] = $row;
+        }
+        return $orders;
+    } else {
+        // No orders found
+        return null;
+    }
+}
 
 // Close the database connection
 $conn->close();

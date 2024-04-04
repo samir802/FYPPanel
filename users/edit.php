@@ -92,11 +92,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <div class="form-group">
                                             <label for="type">Type</label>
                                             <select class="form-control" id="type" name="type" required>
-                                                <option value="doctor"
-                                                    <?php if ($user['type'] === 'doctor') echo 'selected'; ?>>Doctor
+                                                <option value="Company"
+                                                    <?php if ($user['type'] === 'Company') echo 'selected'; ?>>Company
                                                 </option>
-                                                <option value="customer"
-                                                    <?php if ($user['type'] === 'customer') echo 'selected'; ?>>Customer
+                                                <option value="Customer"
+                                                    <?php if ($user['type'] === 'Customer') echo 'selected'; ?>>Customer
                                                 </option>
                                             </select>
                                         </div>
