@@ -26,6 +26,11 @@ $resultVehicles = $conn->query($sqlVehicles);
 $rowVehicles = $resultVehicles->fetch_assoc();
 $vehicleCount = $rowVehicles['count'];
 
+$sqlDrivers = "SELECT COUNT(*) AS count FROM driver WHERE Company_Id={$_SESSION['id']}";
+$resultDrivers = $conn->query($sqlDrivers);
+$rowDrivers = $resultDrivers->fetch_assoc();
+$driverCount = $rowDrivers['count'];
+
 // Fetch total count of orders
 $sessionCompanyId = $_SESSION['id'];
 $sqlOrders = "SELECT COUNT(*) AS count
@@ -51,6 +56,37 @@ if ($_SESSION['id'] != 1) {
         $ordersData[] = array("label" => $row['rented_month'], "y" => $row['count']);
     }
 }
+$totalIncomeData = array();
+if ($_SESSION['id'] != 1) {
+    $sqlTotalPriceByMonth = "SELECT 
+                        CONCAT(YEAR(o.Rented_date), '-', LPAD(MONTH(o.Rented_date), 2, '0')) AS label,
+                        SUM(o.Total_Price) AS y
+                    FROM 
+                        orders o
+                    JOIN 
+                        vehicles v ON o.vehicle_id = v.VehicleID
+                    WHERE 
+                        v.Company_Id = $sessionCompanyId
+                    GROUP BY 
+                        YEAR(o.Rented_date), MONTH(o.Rented_date)
+                    ";
+    $resultTotalIncomeByMonth = $conn->query($sqlTotalPriceByMonth);
+
+    // Initialize array to hold data for the bar chart
+    while ($row = $resultTotalIncomeByMonth->fetch_assoc()) {
+        $totalIncomeData[] = $row;
+    }
+}
+
+
+$sqlCompanyImage = "SELECT Company_Logo FROM company WHERE id = {$_SESSION['id']}";
+$resultCompanyImage = $conn->query($sqlCompanyImage);
+$companyImageURL = null; // Initialize to null
+if ($resultCompanyImage && $resultCompanyImage->num_rows > 0) {
+    $rowCompanyImage = $resultCompanyImage->fetch_assoc();
+    $companyImageURL = $rowCompanyImage['Company_Logo'];
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -91,13 +127,30 @@ if ($_SESSION['id'] != 1) {
         }
 
         .count-container {
-            background-color: #28a745;
+            /* background-color: lightblue; */
             padding: 20px;
             border-radius: 10px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+            /* Customize shadow here */
         }
 
         .count-container h4 {
             color: white;
+        }
+
+        .btn-gradient-primary {
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            color: #fff;
+        }
+
+        .btn-gradient-success {
+            background: linear-gradient(to right, #11998e, #38ef7d);
+            color: #fff;
+        }
+
+        .btn-gradient-danger {
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+            color: #fff;
         }
     </style>
 </head>
@@ -108,8 +161,26 @@ if ($_SESSION['id'] != 1) {
         <!-- Sidebar -->
         <?php include ('sidebar.php'); ?>
 
-        <!-- Header -->
-        <?php include ('header.php'); ?>
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                </li>
+            </ul>
+            <!-- Right navbar links -->
+            <ul class="navbar-nav ml-auto">
+                <li>
+
+                    <img src="<?php echo $base; ?>/uploads/<?php echo $companyImageURL; ?>" class="Circle" style="
+                            width: 40px;
+                            height: 40px;
+                            border-radius: 50%;
+                            margin: auto;
+                            ">
+                </li>
+            </ul>
+        </nav>
 
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
@@ -121,54 +192,75 @@ if ($_SESSION['id'] != 1) {
                         <div class="col-12">
                             <?php if ($_SESSION['id'] == 1) { ?>
                                 <div class="container">
-                                    <div class="row">
-                                        <div class="col-md-3 count-container" style="margin-right:5px">
-                                            <h4>Total Users:
-                                                <?php echo $userCount; ?>
+                                    <div class="row justify-content-between">
+                                        <div class="col-md-3 count-container btn-gradient-primary" style="margin-right:5px">
+                                            <h4>Total Users
+                                                <div class="col-md-2">
+                                                    <?php echo $userCount; ?>
+                                                </div>
                                             </h4>
                                         </div>
-                                        <div class="col-md-3 count-container">
-                                            <h4>Total Companies:
-                                                <?php echo $companyCount; ?>
+                                        <div class="col-md-3 count-container btn-gradient-success">
+                                            <h4>Total Companies
+                                                <div class="col-md-2">
+                                                    <?php echo $companyCount; ?>
+
+                                                </div>
                                             </h4>
                                         </div>
                                     </div>
                                 </div>
                             <?php } else { ?>
                                 <div class="container">
-                                    <div class="row">
-                                        <div class="col-md-3 count-container" style="margin-right:5px">
+                                    <div class="row justify-content-between">
+                                        <div class="col-md-3 count-container btn-gradient-primary">
                                             <h4>Total Vehicles
                                                 <div class="col-md-2">
                                                     <?php echo $vehicleCount; ?>
                                                 </div>
                                             </h4>
                                         </div>
-                                        <div class="col-md-3 count-container">
+                                        <div class="col-md-3 count-container btn-gradient-success">
                                             <h4>Total Orders Placed
                                                 <div class="col-md-2">
                                                     <?php echo $orderCount; ?>
                                                 </div>
                                             </h4>
                                         </div>
+                                        <div class="col-md-3 count-container btn-gradient-danger">
+                                            <h4>Total Driver
+                                                <div class="col-md-2">
+                                                    <?php echo $driverCount; ?>
+                                                </div>
+                                            </h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row justify-content-between" style="margin-top: 50px;">
+                                    <!-- Add canvas for pie chart with smaller dimensions -->
+                                    <div class="row table-bordered"
+                                        style="background-color:white; max-width:500px; margin-left:50px; border-radius: 20px;">
+                                        <div class="col-12 p-3">
+                                            <h2>Orders by Month</h2>
+                                            <div class="divider"></div>
+                                            <canvas id="ordersChart" style="max-width: 500px; max-height: 400px;"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="row table-bordered"
+                                        style="background-color:white; max-width:500px; margin-right:50px; border-radius: 20px;">
+                                        <div class="col-12 p-3">
+                                            <h2>Total Income by Month</h2>
+                                            <div class="divider"></div>
+                                            <canvas id="incomeChart" style="max-width: 500px; max-height: 400px;"></canvas>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <!-- Add canvas for pie chart with smaller dimensions -->
-                                <div class="row"
-                                    style="background-color:white; max-width:400px; margin-left:50px; border-radius: 20px;">
-                                    <div class="col-12 p-3">
-                                        <h2>Total Orders by Month</h2>
-                                        <div class="divider"></div>
-                                        <canvas id="ordersChart" style="max-width: 400px; max-height: 400px;"></canvas>
-                                    </div>
-                                </div>
+
+
                             <?php } ?>
                         </div>
                     </div>
-
-
-
                 </div>
             </section>
         </div>
@@ -198,17 +290,49 @@ if ($_SESSION['id'] != 1) {
                     datasets: [{
                         data: <?php echo json_encode(array_column($ordersData, 'y')); ?>,
                         backgroundColor: [
-                            'rgba(255, 99, 132, 0.5)',
-                            'rgba(54, 162, 235, 0.5)',
-                            'rgba(255, 206, 86, 0.5)',
-                            'rgba(75, 192, 192, 0.5)',
-                            'rgba(153, 102, 255, 0.5)',
-                            'rgba(255, 159, 64, 0.5)'
+                            'rgba(255, 99, 132, 0.8)',
+                            'rgba(54, 162, 235, 0.8)',
+                            'rgba(255, 206, 86, 0.8)',
+                            'rgba(75, 192, 192, 0.8)',
+                            'rgba(153, 102, 255, 0.8)',
+                            'rgba(255, 159, 64, 0.8)'
                         ]
                     }]
                 },
                 options: {
                     responsive: true
+                }
+            });
+
+            // JavaScript code to render bar chart
+            var incomeCtx = document.getElementById('incomeChart').getContext('2d');
+            var incomeChart = new Chart(incomeCtx, {
+                type: 'bar',
+                data: {
+                    labels: <?php echo json_encode(array_column($totalIncomeData, 'label')); ?>,
+                    datasets: [{
+                        label: 'Total Income',
+                        data: <?php echo json_encode(array_column($totalIncomeData, 'y')); ?>,
+                        backgroundColor: [
+
+                            'rgba(153, 102, 255, 0.8)',
+
+                        ],
+                        borderColor: [
+
+                            'rgba(153, 102, 255, 1)',
+
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
                 }
             });
         });

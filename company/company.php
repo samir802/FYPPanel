@@ -167,7 +167,7 @@ $result = $conn->query($sql);
                                     </table>
 
                                     <!-- Pagination -->
-                                    <nav aria-label="Page navigation">
+                                    <nav aria-label="Page navigation" style="margin-top:10px;">
                                         <ul class="pagination">
                                             <?php if ($page > 1) { ?>
                                                 <li class="page-item">

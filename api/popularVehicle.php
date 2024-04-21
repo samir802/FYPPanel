@@ -33,8 +33,6 @@ GROUP BY
     v.VehicleID
 HAVING 
     AVG(r.Rating) >= 3;
-
-
 ";
 $result = $conn->query($query);
 if ($result->num_rows > 0) {

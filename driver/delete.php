@@ -6,21 +6,17 @@ if (!isset($_SESSION['id'])) {
 }
 
 // Include database connection
-include('../database/db.php');
+include ('../database/db.php');
 
-// Check if company ID is provided in the URL
-if (!isset($_GET['id'])) {
-    header("Location: company.php");
+if (!isset($_GET['Driver_ID'])) {
+    header("Location: driver.php");
     exit();
 }
 
-$companyId = $_GET['id'];
+$driverId = $_GET['Driver_ID'];
 
-// Delete the company and its associated user
-$deleteSql = "DELETE company, users FROM company
-              INNER JOIN users ON company.user_id = users.id
-              WHERE company.id = $companyId";
+$deleteSql = "DELETE FROM driver WHERE Driver_Id = '$driverId'";
 $conn->query($deleteSql);
 
-header("Location: company.php");
+header("Location: driver.php");
 exit();

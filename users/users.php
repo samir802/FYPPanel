@@ -214,7 +214,7 @@ $result = $conn->query($sql);
                                     </table>
 
                                     <!-- Pagination -->
-                                    <nav aria-label="Pagination">
+                                    <nav aria-label="Pagination" style="margin-top:10px;">
                                         <ul class="pagination justify-content-center">
                                             <?php if ($page > 1) : ?>
                                             <li class="page-item">

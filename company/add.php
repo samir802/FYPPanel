@@ -1,5 +1,5 @@
 <?php
-require_once ('baseLink.php');
+require_once ('../baseLink.php');
 
 session_start();
 if (!isset($_SESSION['id'])) {

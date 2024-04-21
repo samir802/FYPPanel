@@ -40,16 +40,59 @@ $totalPages = ceil($totalRecords / $recordsPerPage);
 // Add pagination to the query
 $sql .= " LIMIT $offset, $recordsPerPage";
 $result = $conn->query($sql);
+
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vehicles List</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.1.0/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .content-wrapper {
+            flex: 1;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            margin-bottom: 0;
+        }
+
+        .form-group {
+            margin-bottom: 0.5rem;
+        }
+
+        .table th,
+        .table td {
+            vertical-align: middle;
+        }
+
+        .pagination {
+            justify-content: center;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 
 <body class="hold-transition sidebar-mini">
@@ -57,9 +100,8 @@ $result = $conn->query($sql);
 
         <!-- Sidebar -->
         <?php include ('../sidebar.php'); ?>
-
-        <!-- Header -->
         <?php include ('../header.php'); ?>
+
 
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
@@ -70,10 +112,12 @@ $result = $conn->query($sql);
                     <div class="row">
                         <div class="col-12">
                             <div class="card">
-                                <div class="card-header">
-                                    <h3 class="card-title">Vehicle List</h3><br>
-                                    <a href="add.php?id=<?php echo $_SESSION['id'] ?>" class="btn btn-success">Add
-                                        New</a>
+                                <div class="card-header row">
+                                    <h3 class="card-title">Vehicle List</h3>
+                                    <div>
+                                        <a href="add.php?id=<?php echo $_SESSION['id'] ?>" class="btn btn-success">Add
+                                            New</a>
+                                    </div>
                                 </div>
                                 <div class="card-body">
                                     <!-- Filter form -->
@@ -88,73 +132,54 @@ $result = $conn->query($sql);
                                             </div>
                                             <div class="col-auto">
                                                 <div class="form-group">
-                                                    <label>&nbsp;</label>
                                                     <button type="submit" class="btn btn-primary">Filter</button>
                                                 </div>
                                             </div>
                                         </div>
                                     </form>
 
-
                                     <!-- company table -->
-                                    <table class="table" style="width:auto">
-                                        <thead class="table-dark">
-                                            <tr>
-                                                <th>Image</th>
-                                                <th>Vehicle Brand</th>
-                                                <th>Capacity</th>
-                                                <th>Engine Capacity</th>
-                                                <th>Fuel Consumption</th>
-                                                <th>Driving Method</th>
-                                                <th>Fuel Type</th>
-                                                <th>Price</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php while ($row = $result->fetch_assoc()) { ?>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover">
+                                            <thead class="table-dark">
                                                 <tr>
-
-                                                    <td><img src="<?php echo $img_base . $row['Vehicle_Image']; ?>"
-                                                            alt="Img" width="100" height="100">
-                                                    </td>
-                                                    <td>
-                                                        <?php echo $row['VehicleBrand']; ?>
-                                                    </td>
-
-                                                    <td>
-                                                        <?php echo $row['Capacity']; ?> seat
-                                                    </td>
-
-                                                    <td>
-                                                        <?php echo $row['Engine_capacity']; ?> cc
-                                                    </td>
-                                                    <td>
-                                                        <?php echo $row['Fuel_consumption']; ?> kmpl
-                                                    </td>
-                                                    <td>
-                                                        <?php echo $row['Driving_method']; ?>
-                                                    </td>
-                                                    <td>
-                                                        <?php echo $row['FuelType']; ?>
-                                                    </td>
-                                                    <td>
-                                                        Rs
-                                                        <?php echo $row['Price']; ?>
-                                                    </td>
-                                                    <td>
-                                                        <a href="edit.php?id=<?php echo $row['VehicleID']; ?>"
-                                                            class="btn btn-sm btn-primary">Edit</a>
-                                                        <a href="delete.php?id=<?php echo $row['VehicleID']; ?>"
-                                                            class="btn btn-sm btn-danger">Delete</a>
-                                                    </td>
+                                                    <th>Image</th>
+                                                    <th>Vehicle Brand</th>
+                                                    <th>Capacity</th>
+                                                    <th>Engine Capacity</th>
+                                                    <th>Fuel Consumption</th>
+                                                    <th>Driving Method</th>
+                                                    <th>Fuel Type</th>
+                                                    <th>Price</th>
+                                                    <th>Action</th>
                                                 </tr>
-                                            <?php } ?>
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                <?php while ($row = $result->fetch_assoc()) { ?>
+                                                    <tr>
+                                                        <td><img src="<?php echo $img_base . $row['Vehicle_Image']; ?>"
+                                                                alt="Img" width="100" height="100"></td>
+                                                        <td><?php echo $row['VehicleBrand']; ?></td>
+                                                        <td><?php echo $row['Capacity']; ?> seat</td>
+                                                        <td><?php echo $row['Engine_capacity']; ?> cc</td>
+                                                        <td><?php echo $row['Fuel_consumption']; ?> kmpl</td>
+                                                        <td><?php echo $row['Driving_method']; ?></td>
+                                                        <td><?php echo $row['FuelType']; ?></td>
+                                                        <td>Rs <?php echo $row['Price']; ?></td>
+                                                        <td>
+                                                            <a href="edit.php?id=<?php echo $row['VehicleID']; ?>"
+                                                                class="btn btn-sm btn-primary">Edit</a>
+                                                            <a href="delete.php?id=<?php echo $row['VehicleID']; ?>"
+                                                                class="btn btn-sm btn-danger">Delete</a>
+                                                        </td>
+                                                    </tr>
+                                                <?php } ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
 
                                     <!-- Pagination -->
-                                    <nav aria-label="Page navigation" style="margin-top:10px;">
+                                    <nav aria-label="Page navigation">
                                         <ul class="pagination">
                                             <?php if ($page > 1) { ?>
                                                 <li class="page-item">
@@ -187,8 +212,6 @@ $result = $conn->query($sql);
                     </div>
                 </div>
             </section>
-
-
         </div>
 
         <!-- Main Footer -->

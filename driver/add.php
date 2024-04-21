@@ -1,82 +1,35 @@
 <?php
-require_once ('baseLink.php');
-
-session_start();
+require_once ('../baseLink.php');
+include ('../database/db.php');
+// session_start();
 if (!isset($_SESSION['id'])) {
     header("Location: ../index.php");
     exit();
 }
-include ('../database/db.php');
 
 // Initialize variables
 $name = '';
-$email = '';
+$address = '';
 $phone = '';
-$owner = '';
-
-// Check if the email already exists in the users table
+$price = '';
+$VehicleType = '';
+$CompanyId = $_SESSION['id'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['email'];
-
-    $emailExistsSql = "SELECT id FROM users WHERE email = '$email'";
-    $emailExistsResult = $conn->query($emailExistsSql);
-
-    if ($emailExistsResult->num_rows > 0) {
-        // Email already exists, set flash message and redirect back with form data
-        $_SESSION['flash_message'] = "Email already exists!";
-        $_SESSION['form_data'] = $_POST;
-        header("Location: add.php");
-        exit();
-    }
-
-    // Retrieve form data
-    $owner = $_POST['owner'];
-    $phone = $_POST['phone'];
-    $address = $_POST['address'];
-
-    // Hash the password
-    $password = $_POST['password'];
-    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
-
-    // Handle the image upload
-    $img = $_FILES['img']['name'];
-    $targetDir = "../uploads/";
-    $targetFilePath = $targetDir . basename($img);
-    move_uploaded_file($_FILES['img']['tmp_name'], $targetFilePath);
-    // Handle the image upload
-    $img2 = $_FILES['img1']['name'];
-    $targetDir1 = "../uploads/";
-    $targetFilePath1 = $targetDir1 . basename($img2);
-    move_uploaded_file($_FILES['img1']['tmp_name'], $targetFilePath1);
-
-    // Create a new user
-    $userSql = "INSERT INTO users (name,phone,address,email, password, image, type) VALUES ('$owner','$phone','$address','$email', '$hashedPassword','$img', 'Company')";
-    $conn->query($userSql);
-
-    // Get the user_id of the newly created user
-    $user_id = $conn->insert_id;
-
-
-    // Insert the company into the "company" table
     $name = $_POST['name'];
+    $address = $_POST['address'];
+    $phone = $_POST['phone'];
+    $price = $_POST['price'];
+    $VehicleType = $_POST['VehicleType'];
 
-    $companySql = "INSERT INTO company (Company_Name,user_id,Company_Logo) VALUES ('$name','$user_id','$img2')";
-    $conn->query($companySql);
+    $sql = "INSERT INTO driver (Driver_Name,Phone,Address,Price,Vehicle_Type,Company_Id) VALUES ('$name','$phone','$address','$price','$VehicleType','$CompanyId')";
+    $conn->query($sql);
 
     // Set success flash message
-    $_SESSION['flash_message'] = "Company added successfully!";
+    $_SESSION['flash_message'] = "Driver added successfully!";
 
     // Redirect to the company list page
-    header("Location: company.php");
+    header("Location: driver.php");
     exit();
-}
-
-// Fill form data if redirected back due to existing email
-if (isset($_SESSION['form_data'])) {
-    $name = $_SESSION['form_data']['name'];
-    $email = $_SESSION['form_data']['email'];
-    unset($_SESSION['form_data']);
 }
 ?>
 
@@ -84,7 +37,7 @@ if (isset($_SESSION['form_data'])) {
 <html>
 
 <head>
-    <title>Add Company</title>
+    <title>Add Driver</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.1.0/css/adminlte.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
@@ -121,46 +74,39 @@ if (isset($_SESSION['form_data'])) {
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h3 class="card-title">Add Company</h3>
+                                    <h3 class="card-title">Add Driver</h3>
                                 </div>
                                 <div class="card-body">
                                     <form method="POST" action="add.php" enctype="multipart/form-data">
+
                                         <div class="form-group">
-                                            <label for="name">Company Name</label>
+                                            <label for="name">Driver Name</label>
                                             <input type="text" class="form-control" id="name" name="name" required>
                                         </div>
                                         <div class="form-group">
-                                            <label for="owner">Owner Name</label>
-                                            <input type="text" class="form-control" id="owner" name="owner" required>
+                                            <label for="phone">Phone number:</label>
+                                            <input type="number" class="form-control" id="phone" name="phone" required>
                                         </div>
-                                        <div class="form-group">
-                                            <label for="phone">Phone Number:</label>
-                                            <input type="text" class="form-control" id="phone" name="phone" required>
-                                        </div>
+
                                         <div class="form-group">
                                             <label for="address">Address</label>
                                             <input type="text" class="form-control" id="address" name="address"
                                                 required>
                                         </div>
                                         <div class="form-group">
-                                            <label for="email">Email</label>
-                                            <input type="email" class="form-control" id="email" name="email" required>
+                                            <label for="price">Price</label>
+                                            <input type="price" class="form-control" id="price" name="price" required>
                                         </div>
                                         <div class="form-group">
-                                            <label for="password">Password</label>
-                                            <input type="password" class="form-control" id="password" name="password"
-                                                required>
+                                            <label for="VehicleType">Vehicle Type</label>
+                                            <select class="form-control" id="VehicleType" name="VehicleType" required>
+                                                <option value="">Select Vehicle Type</option>
+                                                <option value="Jeep">Jeep</option>
+                                                <option value="Car">Car</option>
+                                                <option value="Motorcycle">Motorcycle/Scooter</option>
+                                            </select>
                                         </div>
-
-                                        <div class="form-group">
-                                            <label for="img">Image</label>
-                                            <input type="file" class="form-control" id="img" name="img" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="img1">Company Logo</label>
-                                            <input type="file" class="form-control" id="img1" name="img1" required>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">Add Company</button>
+                                        <button type="submit" class="btn btn-primary">Add Driver</button>
                                     </form>
                                 </div>
                             </div>

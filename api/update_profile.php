@@ -15,10 +15,9 @@ $stmt->execute();
 
 // Get the result
 $result = $stmt->get_result();
-$userId = null; // Changed to null as it seems there's only one user ID expected
+$userId = null;
 while ($row = $result->fetch_assoc()) {
-    // User profile found
-    $userId = $row['id']; // Changed to a single value
+    $userId = $row['id'];
 }
 
 // Update the user's image if $image has a value
@@ -30,7 +29,7 @@ if (!empty($_FILES['image']['name'])) {
     // Update the user's image
     $sql = "UPDATE users SET image=? WHERE id=?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("si", $image, $userId); // Assuming user ID is an integer
+    $stmt->bind_param("si", $image, $userId);
     $stmt->execute();
 
     // Check for success
@@ -42,23 +41,24 @@ if (!empty($_FILES['image']['name'])) {
         echo json_encode(["message" => "Error uploading image."]);
     }
 
-}
-
-// Update the user's profile details
-$sql1 = "UPDATE users SET name = ?, email = ?, phone = ?, address = ? WHERE id=?";
-$stmt1 = $conn->prepare($sql1);
-$stmt1->bind_param("ssssi", $name, $email, $phone, $address, $userId); // Assuming user ID is an integer
-$stmt1->execute();
-
-// Check for success
-if ($stmt1->affected_rows > 0) {
-    // Echo JSON response
-    echo json_encode(["message" => "Profile details updated successfully."]);
+    $stmt->close();
 } else {
-    // Echo JSON response
-    echo json_encode(["message" => "Error updating profile."]);
+    // Update the user's profile details only if image is not uploaded
+    $sql1 = "UPDATE users SET name = ?, email = ?, phone = ?, address = ? WHERE id=?";
+    $stmt1 = $conn->prepare($sql1);
+    $stmt1->bind_param("ssssi", $name, $email, $phone, $address, $userId);
+    $stmt1->execute();
+
+    // Check for success
+    if ($stmt1->affected_rows > 0) {
+        // Echo JSON response
+        echo json_encode(["message" => "Profile details updated successfully."]);
+    } else {
+        // Echo JSON response
+        echo json_encode(["message" => "Error updating profile."]);
+    }
+
+    $stmt1->close();
 }
 
-$stmt->close();
-$stmt1->close();
 $conn->close();

@@ -101,8 +101,8 @@ function generateToken()
                                         <div class="form-group">
                                             <label for="type">Type</label>
                                             <select class="form-control" id="type" name="type" required>
-                                                <option value="doctor">Customer</option>
-                                                <option value="customer">Company</option>
+                                                <option value="Customer">Customer</option>
+                                                <option value="Company">Company</option>
                                             </select>
                                         </div>
                                         <button type="submit" class="btn btn-primary">Add User</button>

@@ -4,9 +4,7 @@ require_once 'baseLink.php';
 <style>
     .nav-item.active>.nav-link {
         background-color: #007bff;
-        /* Change this to the desired active link color */
         color: #fff;
-        /* Change this to the desired text color for active link */
     }
 </style>
 

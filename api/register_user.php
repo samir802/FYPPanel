@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $address = $_POST['address'];
     $email = $_POST['email'];
     $password = $_POST['password'];
-    $type = isset($_POST['type']) ? $_POST['type'] : 'Customer'; // Set default value if type is not provided
+    $type = isset($_POST['type']) ? $_POST['type'] : 'Customer';
 
     // Check if the email already exists in the database
     $checkEmailSql = "SELECT * FROM users WHERE email = '$email'";
@@ -22,18 +22,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Hash the password
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-        // Prepare the SQL statement to insert the user into the database
-        $insertSql = "INSERT INTO users (name, phone,address, email, password, type) VALUES ('$name','$phone','$address','$email', '$hashedPassword', '$type')";
+        $image = $_FILES['image']['name'];
+        $imagePath = "../uploads/" . $image;
+        // move_uploaded_file($_FILES['image']['tmp_name'], $imagePath);
 
-        if ($conn->query($insertSql) === TRUE) {
-            $response = array(
-                'status' => 'success',
-                'message' => 'User registered successfully'
-            );
+        if (move_uploaded_file($_FILES['image']['tmp_name'], $imagePath)) {
+            $insertSql = "INSERT INTO users (name, phone, address, email, password, type, Image) VALUES ('$name','$phone','$address','$email', '$hashedPassword', '$type', '$image')";
+
+            if ($conn->query($insertSql) === TRUE) {
+                $response = array(
+                    'status' => 'success',
+                    'message' => 'User registered successfully'
+                );
+            } else {
+                $response = array(
+                    'status' => 'error',
+                    'message' => 'Error registering user: ' . $conn->error
+                );
+            }
         } else {
+            // File upload failed
             $response = array(
                 'status' => 'error',
-                'message' => 'Error registering user: ' . $conn->error
+                'message' => 'Error uploading image'
             );
         }
     }

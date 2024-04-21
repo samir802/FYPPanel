@@ -124,9 +124,9 @@ $result = $conn->query($sql);
                                                         <?php echo $row['Vehicle_type']; ?>
                                                     </td>
                                                     <td>
-                                                        <a href="edit.php?id=<?php echo $row['Driver_ID']; ?>"
+                                                        <a href="edit.php?Driver_ID=<?php echo $row['Driver_ID']; ?>"
                                                             class="btn btn-sm btn-primary">Edit</a>
-                                                        <a href="delete.php?id=<?php echo $row['Driver_ID']; ?>"
+                                                        <a href="delete.php?Driver_ID=<?php echo $row['Driver_ID']; ?>"
                                                             class="btn btn-sm btn-danger">Delete</a>
                                                     </td>
                                                 </tr>
@@ -135,7 +135,7 @@ $result = $conn->query($sql);
                                     </table>
 
                                     <!-- Pagination -->
-                                    <nav aria-label="Page navigation">
+                                    <nav aria-label="Page navigation" style="margin-top:10px;">
                                         <ul class="pagination">
                                             <?php if ($page > 1) { ?>
                                                 <li class="page-item">

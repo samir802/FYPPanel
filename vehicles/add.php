@@ -2,14 +2,14 @@
 require_once '../baseLink.php';
 session_start();
 if (!isset($_SESSION['id'])) {
-    header("Location: ../dashboard.php");
+    header("Location: ../index.php");
     exit();
 }
 include ('../database/db.php');
 
 // Initialize variables
 $info = $brand = $capacity = $eCapacity = $fuel = $drivingmethod = $ftype = $price = $type = '';
-$companyId = isset($_GET['id']) ? $_GET['id'] : null;
+$companyId = $_SESSION['id'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Retrieve form data
@@ -105,8 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     </h3>
                                 </div>
                                 <div class="card-body">
-                                    <form method="POST" action="add.php?id=<?php echo $_GET['id']?>"
-                                        enctype="multipart/form-data">
+                                    <form method="POST" action="add.php" enctype="multipart/form-data">
 
 
                                         <div class="form-group">
@@ -155,7 +154,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                 <option value="">Select Vehicle Type</option>
                                                 <option value="Jeep">Jeep</option>
                                                 <option value="Car">Car</option>
-                                                <option value="Motorcycle">Motorcycle/Scooter</option>
+                                                <option value="Motorcycle">Motorcycle</option>
+                                                <option value="Scooter">Scooter</option>
                                             </select>
                                         </div>
 

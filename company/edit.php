@@ -33,16 +33,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Handle image upload
     if (isset($_FILES['img']) && $_FILES['img']['error'] === UPLOAD_ERR_OK) {
-        $imgTmpName = $_FILES['img']['tmp_name'];
-        $targetDir1 = "../uploads/";
-        $targetFilePath1 = $targetDir1 . basename($imgTmpName);
+        $imgTmpName = $_FILES['img']['name'];
+        $imagePath = "../uploads/" . $image;
+        $targetFilePath1 = $imagePath . basename($imgTmpName);
         // Move uploaded image to the uploads directory
-        move_uploaded_file($_FILES['img']['tmp_name'], $targetFilePath1);
+        move_uploaded_file($_FILES['img']['name'], $targetFilePath1);
 
 
-        // Update the company details in the database including the image path
-        $updateSql = "UPDATE company SET Company_Logo = '$imgPath' WHERE id = $companyId";
+        $updateSql = "UPDATE company SET Company_Logo = '$imgTmpName' WHERE id = $companyId";
         $conn->query($updateSql);
+
     }
     header("Location: company.php");
     exit();
