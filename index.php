@@ -1,5 +1,6 @@
 <?php
 // Check if the user is already logged in
+session_start();
 if (isset($_SESSION['id'])) {
     header("Location: dashboard.php");
     exit();
@@ -68,14 +69,27 @@ if (isset($_SESSION['id'])) {
         .popup {
             display: none;
             position: fixed;
-            top: 50%;
+            top: 0;
+            /* Position at the top */
             left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.5);
+            transform: translateX(-50%);
+            background-color: #ff4d4d;
+            /* Red color */
             padding: 20px;
             border-radius: 10px;
             color: #fff;
+            /* White text */
             z-index: 9999;
+        }
+
+        /* Close button */
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            color: #fff;
+            font-size: 20px;
         }
     </style>
 </head>
@@ -104,6 +118,7 @@ if (isset($_SESSION['id'])) {
         </div>
     </div>
     <div class="popup" id="errorPopup">
+        <span class="close-btn" onclick="closePopup()">&times;</span>
         <p id="popupMessage"></p>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -119,6 +134,10 @@ if (isset($_SESSION['id'])) {
         function showPopup(message) {
             document.getElementById("popupMessage").innerText = message;
             document.getElementById("errorPopup").style.display = "block";
+        }
+
+        function closePopup() {
+            document.getElementById("errorPopup").style.display = "none";
         }
     </script>
 </body>

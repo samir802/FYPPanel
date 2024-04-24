@@ -76,9 +76,7 @@ function generateToken()
                     <div class="row">
                         <div class="col-12">
                             <div class="card">
-                                <div class="card-header">
-                                    <a href="add.php" class="btn btn-success">Add New</a>
-                                </div>
+
                                 <div class="card-body">
                                     <form method="POST">
                                         <div class="form-group">

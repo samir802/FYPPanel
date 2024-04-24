@@ -168,18 +168,20 @@ if ($resultCompanyImage && $resultCompanyImage->num_rows > 0) {
                     <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
                 </li>
             </ul>
-            <!-- Right navbar links -->
-            <ul class="navbar-nav ml-auto">
-                <li>
+            <?php if ($_SESSION['id'] != 1) { ?>
+                <!-- Right navbar links -->
+                <ul class="navbar-nav ml-auto">
+                    <li>
 
-                    <img src="<?php echo $base; ?>/uploads/<?php echo $companyImageURL; ?>" class="Circle" style="
+                        <img src="<?php echo $base; ?>/uploads/<?php echo $companyImageURL; ?>" class="Circle" style="
                             width: 40px;
                             height: 40px;
                             border-radius: 50%;
                             margin: auto;
                             ">
-                </li>
-            </ul>
+                    </li>
+                </ul>
+            <?php } ?>
         </nav>
 
         <!-- Content Wrapper. Contains page content -->

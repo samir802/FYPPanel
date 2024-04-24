@@ -15,14 +15,16 @@ if ($resultCompanyImage && $resultCompanyImage->num_rows > 0) {
         </li>
     </ul>
     <!-- Right navbar links -->
-    <ul class="navbar-nav ml-auto">
-        <li>
-            <img src="../uploads/<?php echo $companyImageURL; ?>" class="Circle" style="
+    <?php if ($_SESSION['id'] != 1) { ?>
+        <ul class="navbar-nav ml-auto">
+            <li>
+                <img src="../uploads/<?php echo $companyImageURL; ?>" class="Circle" style="
                     width: 40px;
                     height: 40px;
                     border-radius: 50%;
                     margin: auto;
                     ">
-        </li>
-    </ul>
+            </li>
+        </ul>
+    <?php } ?>
 </nav>

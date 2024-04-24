@@ -7,7 +7,6 @@ if (!isset($_SESSION['id'])) {
 
 require_once('../database/db.php');
 
-
 // Retrieve the filter values
 $name = $_GET['name'] ?? '';
 $email = $_GET['email'] ?? '';
@@ -139,9 +138,9 @@ $result = $conn->query($sql);
                     <div class="row">
                         <div class="col-12">
                             <div class="card">
-                                <div class="card-header">
+                                <!-- <div class="card-header">
                                     <a href="add.php" class="btn btn-success">Add New</a>
-                                </div>
+                                </div> -->
                                 <div class="card-body">
                                     <form class="mb-3" method="GET">
                                         <div class="row">
@@ -164,8 +163,8 @@ $result = $conn->query($sql);
                                                     <label for="type">Type</label>
                                                     <select class="form-control" id="type" name="type">
                                                         <option value="">All</option>
-                                                        <option value="doctor"
-                                                            <?php if ($type == 'doctor') echo 'selected'; ?>>Doctor
+                                                        <option value="Company"
+                                                            <?php if ($type == 'Company') echo 'selected'; ?>>Company
                                                         </option>
                                                         <option value="customer"
                                                             <?php if ($type == 'customer') echo 'selected'; ?>>Customer
@@ -203,8 +202,9 @@ $result = $conn->query($sql);
                                                 <td>
                                                     <a href="edit.php?id=<?php echo $row['id']; ?>"
                                                         class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
-                                                    <a href="delete.php?id=<?php echo $row['id']; ?>"
-                                                        class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>
+                                                    <button class="btn btn-danger btn-sm"
+                                                        onclick="confirmDelete(<?php echo $row['id']; ?>)"><i
+                                                            class="fas fa-trash"></i></button>
                                                 </td>
                                             </tr>
                                             <?php
@@ -257,6 +257,25 @@ $result = $conn->query($sql);
 
         </div>
 
+        <!-- Delete Confirmation Modal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to delete this user?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Main Footer -->
         <footer class="main-footer">
             <div class="float-right d-none d-sm-block">
@@ -269,6 +288,16 @@ $result = $conn->query($sql);
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.1.0/js/adminlte.min.js"></script>
+
+    <script>
+        function confirmDelete(id) {
+            $('#deleteModal').modal('show');
+            $('#confirmDeleteBtn').on('click', function () {
+                // Redirect to delete.php with the user id
+                window.location.href = 'delete.php?id=' + id;
+            });
+        }
+    </script>
 </body>
 
 </html>
